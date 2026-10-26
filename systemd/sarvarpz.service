@@ -1,0 +1,45 @@
+[Unit]
+Description=Project Zomboid B42 Dedicated Server (SarvarPZ)
+Documentation=https://github.com/amiruddin-mohd/pz-server-automation
+After=network.target steam.service
+Requires=steam.service
+Wants=steam.service
+
+[Service]
+Type=simple
+User=trilayer
+Group=trilayer
+WorkingDirectory=/home/trilayer/Servers/SarvarPZ
+
+# SteamCMD auto-update + server start
+ExecStartPre=/home/trilayer/Servers/SarvarPZ/steamcmd/steamcmd.sh +force_install_dir /home/trilayer/Servers/SarvarPZ +login anonymous +app_update 380870 validate +quit
+ExecStart=/home/trilayer/Servers/SarvarPZ/start-server.sh -servername sarvarpz
+
+# Restart policy
+Restart=on-failure
+RestartSec=30
+StartLimitInterval=600
+StartLimitBurst=5
+
+# Resource limits (adjust for your hardware)
+MemoryLimit=4G
+CPUQuota=200%
+LimitNOFILE=65536
+
+# Security hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/home/trilayer/Servers/SarvarPZ /mnt/Data/pz-backups
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=sarvarpz
+
+[Install]
+WantedBy=multi-user.target
